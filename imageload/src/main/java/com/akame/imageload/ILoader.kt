@@ -4,11 +4,7 @@ import android.content.Context
 import android.widget.ImageView
 
 interface ILoader {
-    fun displayImage(
-        options: ImageOptions,
-        imageView: ImageView,
-        imageCallBack: ImageCallBack? = null
-    )
+    fun displayImage(options: ImageOptions)
 
     fun pauseLoad(context: Context)
 

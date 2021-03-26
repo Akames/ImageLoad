@@ -19,7 +19,7 @@ class GlideCircleTransform(
     private val context: Context,
     borderWidth: Int,
     borderColor: Int,
-    private val round: Int = 20,
+    private val round: Int,
     private var borderColors: IntArray
 ) : BitmapTransformation() {
     private val mBorderPaint: Paint?
@@ -38,7 +38,7 @@ class GlideCircleTransform(
         pool: BitmapPool, toTransform: Bitmap,
         outWidth: Int, outHeight: Int
     ): Bitmap? {
-        return if (round != 0)
+        return if (round > 0)
             filletCrop(context, pool, toTransform)
         else
             circleCrop(pool, toTransform)

@@ -23,14 +23,15 @@ import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class GliderLoaderManger : ILoader {
-    override fun displayImage(
-        options: ImageOptions,
-        imageView: ImageView,
-        imageCallBack: ImageCallBack?
-    ) {
+    override fun displayImage(options: ImageOptions) {
         if (options.context == null) {
-            throw Throwable("context参数不能为空")
+            throw Throwable("context参数不能为null")
         }
+
+        if (options.imageView == null) {
+            throw Throwable("imageView参数不能为null")
+        }
+
         val rm: RequestManager = when (val context = options.context) {
 
             is Activity -> Glide.with(context)
@@ -43,13 +44,13 @@ class GliderLoaderManger : ILoader {
         var apply = rm.load(options.imagePath)
             .apply(configOptions(options))
 
-        if (imageCallBack != null) {
+        options.imageCallBack?.also {
             apply = apply.addListener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?, model: Any?,
                     target: Target<Drawable>?, isFirstResource: Boolean
                 ): Boolean {
-                    imageCallBack.error()
+                    it.error()
                     return false
                 }
 
@@ -58,15 +59,16 @@ class GliderLoaderManger : ILoader {
                     target: Target<Drawable>?,
                     dataSource: DataSource?, isFirstResource: Boolean
                 ): Boolean {
-                    imageCallBack.success(resource)
+                    it.success(resource)
                     return false
                 }
             })
         }
 
+
         //是否等比例加载
         if (options.isConstrain) {
-            apply.into(object : CustomViewTarget<ImageView, Drawable>(imageView) {
+            apply.into(object : CustomViewTarget<ImageView, Drawable>(options.imageView!!) {
                 override fun onLoadFailed(errorDrawable: Drawable?) {
 
                 }
@@ -80,19 +82,19 @@ class GliderLoaderManger : ILoader {
                 ) {
                     val width = resource.intrinsicWidth.toFloat()
                     val height = resource.intrinsicHeight.toFloat()
-                    var ivWidth = imageView.width.toFloat()
+                    var ivWidth = options.imageView!!.width.toFloat()
                     if (ivWidth == 0f) {
-                        ivWidth = imageView.resources.displayMetrics.widthPixels.toFloat()
+                        ivWidth = options.imageView!!.resources.displayMetrics.widthPixels.toFloat()
                     }
                     val ivHeight = (height / width * ivWidth).toInt()
-                    val lp = imageView.layoutParams
+                    val lp = options.imageView!!.layoutParams
                     lp.height = ivHeight
-                    imageView.layoutParams = lp
-                    imageView.setImageDrawable(resource)
+                    options.imageView!!.layoutParams = lp
+                    options.imageView!!.setImageDrawable(resource)
                 }
             })
         } else {
-            apply.into(imageView)
+            apply.into(options.imageView!!)
         }
     }
 

@@ -8,8 +8,6 @@ import com.akame.imageload.ImageCornerType
 
 class ImageOptions {
 
-    private val loaderManager by lazy { GliderLoaderManger() }
-
     var context: Any? = null
 
     var placeholderRes = -1
@@ -30,7 +28,7 @@ class ImageOptions {
 
     var borderColor = -1
 
-    var borderRound = -1
+    var borderRound = 0
 
     var borderColors: IntArray = intArrayOf()
 
@@ -42,23 +40,9 @@ class ImageOptions {
 
     var imagePath: Any? = null
 
-    fun show(imageView: ImageView, imageCallBack: ImageCallBack? = null) {
-        loaderManager.displayImage(this, imageView, imageCallBack)
-    }
+    var imageView: ImageView? = null
 
-    fun cleanMemory(context: Context) {
-        loaderManager.cleanMemory(context)
-    }
+    var imageCallBack: ImageCallBack? = null
 
-    fun clearMemoryCache(context: Context) {
-        loaderManager.clearMemoryCache(context)
-    }
 
-    fun pauseLoad(context: Context) {
-        loaderManager.pauseLoad(context)
-    }
-
-    fun resumeLoad(context: Context) {
-        loaderManager.resumeLoad(context)
-    }
 }

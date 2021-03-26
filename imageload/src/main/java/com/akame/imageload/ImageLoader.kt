@@ -1,61 +1,86 @@
 package com.akame.imageload
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
-import androidx.fragment.app.Fragment
+import android.widget.ImageView
 
+class ImageLoader<T : Context>(private val context: T) {
 
-object ImageLoader {
-    private val imageOption by lazy {
-        ImageOptions()
-    }
+    private val imageOptions by lazy { ImageOptions().also { it.context = context } }
 
-    fun with(context: Context): ImageOptions {
-        return imageOption.apply {
-            this.context = context
-        }
-    }
+    private val loaderManager by lazy { GliderLoaderManger() }
 
-    fun with(context: Activity): ImageOptions {
-        return imageOption.apply {
-            this.context = context
-        }
-    }
-
-    fun with(context: Fragment): ImageOptions {
-        return imageOption.apply {
-            this.context = context
-        }
-    }
-
-    fun pauseLoad(context: Context) {
-        imageOption.pauseLoad(context)
-    }
-
-    fun resumeLoad(context: Context) {
-        imageOption.resumeLoad(context)
+    fun load() {
+        loaderManager.displayImage(imageOptions)
     }
 
     fun cleanMemory(context: Context) {
-        imageOption.cleanMemory(context)
+        loaderManager.cleanMemory(context)
     }
 
     fun clearMemoryCache(context: Context) {
-        imageOption.clearMemoryCache(context)
+        loaderManager.clearMemoryCache(context)
     }
 
-    fun drawConvertBitmap(drawable: Drawable): Bitmap {
-        val w = drawable.intrinsicWidth
-        val h = drawable.intrinsicHeight
-        val bitmapConfig = Bitmap.Config.RGB_565
-        val bitmap = Bitmap.createBitmap(w, h, bitmapConfig)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, w, h)
-        drawable.draw(canvas)
-        return bitmap
-//        return (drawable as BitmapDrawable).bitmap
+    fun pauseLoad(context: Context) {
+        loaderManager.pauseLoad(context)
+    }
+
+    fun resumeLoad(context: Context) {
+        loaderManager.resumeLoad(context)
+    }
+
+    fun imagePath(imagePath: Any): ImageLoader<*> {
+        imageOptions.imagePath = imagePath
+        return this
+    }
+
+    fun blurry(gsBlur: Int, gsEnlarge: Int = 30): ImageLoader<*> {
+        imageOptions.gsBlur = gsBlur
+        imageOptions.gsEnlarge = gsEnlarge
+        return this
+    }
+
+    fun round(round: Int, roundType: ImageCornerType = ImageCornerType.ALL): ImageLoader<*> {
+        imageOptions.round = round
+        imageOptions.roundType = roundType
+        return this
+    }
+
+    fun border(
+        borderWidth: Int,
+        borderRound: Int = 0,
+        borderColor: Int = -1,
+        borderColors: IntArray = intArrayOf()
+    ): ImageLoader<*> {
+        imageOptions.borderWidth = borderWidth
+        imageOptions.borderRound = borderRound
+        imageOptions.borderColor = borderColor
+        imageOptions.borderColors = borderColors
+        return this
+    }
+
+    fun isCenterCrop(): ImageLoader<*> {
+        imageOptions.isCenterCrop = true
+        return this
+    }
+
+    fun isCircleCrop(): ImageLoader<*> {
+        imageOptions.isCircleCrop = true
+        return this
+    }
+
+    fun isConstrain(): ImageLoader<*> {
+        imageOptions.isConstrain = true
+        return this
+    }
+
+    fun imageView(imageView: ImageView): ImageLoader<*> {
+        imageOptions.imageView = imageView
+        return this
+    }
+
+    fun callBack(imageCallBack: ImageCallBack): ImageLoader<*> {
+        imageOptions.imageCallBack = imageCallBack
+        return this
     }
 }
